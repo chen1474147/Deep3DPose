@@ -21,8 +21,6 @@ Deep 3D Pose is released under the MIT License (refer to the LICENSE file for de
 
 
 ### Citing Deep3DPose
-If you find Deep3DPose useful in your research, please consider citing:
-
 To be continued.
 
 
@@ -32,8 +30,13 @@ To be continued.
 3. [generate human clothes](#human-clothes)
 4. [generate human images and annotations](#human-render)
 
+
 ###  Human Pose
-The code in the repository is used to generate human poses. Our pose is composed of 15 joints, as is shown below.
+The code in the repository is used to generate human poses. We use [CMU Mocap Database](http://mocap.cs.cmu.edu/) as pose sources. This database contains about 4 million poses. To better cover the pose space, we also learn [a Bayesian network](http://npp.is.tue.mpg.de/iccv2013/) from these poses.
 
+To use the code, first you need to download the [asf & amc format zipfile](http://mocap.cs.cmu.edu/allasfamc.zip) from [CMU Mocap Database](http://mocap.cs.cmu.edu/). Then you can run the demo_generateskel.m to generate poses.
 
+Note that the code doesn't include the [Bayesian network](http://npp.is.tue.mpg.de/iccv2013/) code. You can download it from the [original website](http://npp.is.tue.mpg.de/iccv2013/) and use the generated poses as input to learn the model.
+
+We transfer the pose from ![CMU format](https://github.com/chen1474147/Deep3DPose-1-skel/blob/master/sources/cmu.bmp) to ![our own format](https://github.com/chen1474147/Deep3DPose-1-skel/blob/master/sources/pose.bmp). Then we use pose to generate human models.
 
