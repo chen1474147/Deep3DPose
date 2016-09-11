@@ -38,5 +38,5 @@ To use the code, first you need to download the [asf & amc format zipfile](http:
 
 Note that the code doesn't include the [Bayesian network](http://npp.is.tue.mpg.de/iccv2013/) code. You can download it from the [original website](http://npp.is.tue.mpg.de/iccv2013/) and use the generated poses as input to learn the model.
 
-We transfer the pose from ![CMU format](https://github.com/chen1474147/Deep3DPose-1-skel/blob/master/sources/cmu.jpg) to ![our own format](https://github.com/chen1474147/Deep3DPose-1-skel/blob/master/sources/pose.jpg). Then we use pose to generate human models.
+We transfer poses from CMU format to our own format. See images in sources directory. Then we use poses to generate human models.
 
