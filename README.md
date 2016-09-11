@@ -22,14 +22,18 @@ Deep 3D Pose is released under the MIT License (refer to the LICENSE file for de
 
 ### Citing Deep3DPose
 If you find Deep3DPose useful in your research, please consider citing:
+
 To be continued.
+
 
 ### Contents
-1. [generate human poses](#human pose)
-2. [generate human models](#off-the-shelf-viewpoint-estimator)
-3. [generate human clothes](#testing-on-voc12-val)
-4. [generate human images and annotations](#training-your-own-models)
+1. [generate human poses](#human-pose)
+2. [generate human models](#human-models)
+3. [generate human clothes](#human-clothes)
+4. [generate human images and annotations](#human-render)
 
 ###  Human Pose
-To be continued.
+The code in the repository is used to generate human poses. Our pose is composed of 15 joints, as is shown below.
+
+
 
