@@ -17,19 +17,12 @@ Our work was initially described in an [arXiv tech report](https://arxiv.org/abs
 
 ### License
 
-Render for CNN is released under the MIT License (refer to the LICENSE file for details).
+Deep 3D Pose is released under the MIT License (refer to the LICENSE file for details).
 
 
 ### Citing Deep3DPose
 If you find Deep3DPose useful in your research, please consider citing:
-
-    @InProceedings{Chen_2016_3DV,
-        Title={Synthesizing Training Images for Boosting Human 3D Pose Estimation},
-        Author={Wenzheng, Chen and Huan, Wang and Yangyan, Li and Hao, Su and Changhe, Tu and Dani, Lischinski and Daniel, Cohen-Or and Baoquan, Chen},
-        Booktitle={3D Vision 2016},
-        month = {October},
-        Year= {2016}
-    }
+To be continued.
 
 ### Contents
 1. [generate human poses](#human pose)
@@ -38,5 +31,5 @@ If you find Deep3DPose useful in your research, please consider citing:
 4. [generate human images and annotations](#training-your-own-models)
 
 ###  Human Pose
-To be appeared soon.
+To be continued.
 
