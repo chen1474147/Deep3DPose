@@ -11,7 +11,7 @@ addpath('parse\');
 %%
 % folder
 
-folder = 'D:\zcode\d3d\prepare\cmudata\allasfamc\subjects';
+folder = '..\asfamc';
 
 % each subfolder contain an asf and several amcs
 subfolders = dir(folder);
