@@ -25,7 +25,7 @@ sequence_num = 0;
 skeleton_num = 0;
 
 
-for i = 1: size(subfolders, 1)
+for i = 1: 3 % size(subfolders, 1)
     
     if subfolders(i).name == '.'
         continue
@@ -50,7 +50,7 @@ for i = 1: size(subfolders, 1)
     amcfiles = dir([ asffolder '\' '*.amc']);
     
     %%
-    for j = 1: size(amcfiles)
+    for j = 1: 3 % size(amcfiles)
         
         disp([i, j]);
         
