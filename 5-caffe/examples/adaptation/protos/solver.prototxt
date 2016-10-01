@@ -1,0 +1,13 @@
+net: "${net}"
+test_iter: ${test_iter}
+test_interval: 10000
+base_lr: 0.001
+momentum: 0.9
+lr_policy: "inv"
+gamma: 0.001
+power: 0.75
+display: 100
+max_iter: ${max_iter}
+snapshot: 10000
+snapshot_prefix: "${snapshots_path}/train"
+solver_mode: GPU
