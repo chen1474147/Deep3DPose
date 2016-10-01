@@ -39,6 +39,7 @@ Deep 3D Pose is released under the MIT License (refer to the LICENSE file for de
 2. [Human models](#human-models)
 3. [Human clothes]()
 4. [Render](#render)
+4. [caffe](#caffe)
 
 
 ### Prerequisites
@@ -79,4 +80,7 @@ Our rendering parameters will render human images only. To generate a complete i
 
 Note that this repository contains 3 backgrounds, 3 clothes. In the paper we use 796 backgrrounds and 10000 clothes. Thes clothes can be downloaded in the project website page. You can also make your own images by your own.
 
+### caffe
+
+We modify caffe to adjust it to our onw task. We use domain adaptation to make full use of synthetic data. See 5-caffe directory for more detials.
 
