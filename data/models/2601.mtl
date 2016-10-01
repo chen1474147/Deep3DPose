@@ -1,0 +1,4 @@
+newmtl Material
+map_Kd  ../textures/3.png
+newmtl Material2
+map_Kd  ../textures2/3.png
