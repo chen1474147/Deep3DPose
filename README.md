@@ -21,7 +21,7 @@ Deep 3D Pose is released under the MIT License (refer to the LICENSE file for de
 
 
 ### Citing Deep3DPose
-To be continued.
+To appear soon.
 
 
 ### Contents
@@ -34,9 +34,11 @@ To be continued.
 ###  Human Pose
 The code in the repository is used to generate human poses. We use [CMU Mocap Database](http://mocap.cs.cmu.edu/) as pose sources. This database contains about 4 million poses. To better cover the pose space, we also learn [a Bayesian network](http://npp.is.tue.mpg.de/iccv2013/) from these poses.
 
-To use the code, first you need to download the [asf & amc format zipfile](http://mocap.cs.cmu.edu/allasfamc.zip) from [CMU Mocap Database](http://mocap.cs.cmu.edu/). Then you can run the demo_generateskel.m to generate poses.
+To use the code, You can directly run the code demo_generateskel.m in matlab directory. It will generate cmu_skeletons mat file which contains poses.
+
+To acquire more poses, you can download the [asf & amc format zipfile](http://mocap.cs.cmu.edu/allasfamc.zip) from [CMU Mocap Database](http://mocap.cs.cmu.edu/). Then you can set the directory in demo_generateskel.m to generate new poses.
 
 Note that the code doesn't include the [Bayesian network](http://npp.is.tue.mpg.de/iccv2013/) code. You can download it from the [original website](http://npp.is.tue.mpg.de/iccv2013/) and use the generated poses as input to learn the model.
 
-We transfer poses from CMU format to our own format. See images in sources directory. Then we use poses to generate human models.
+We transform poses from CMU format to our own format. See images in sources directory. Then we use poses to generate human models.
 
