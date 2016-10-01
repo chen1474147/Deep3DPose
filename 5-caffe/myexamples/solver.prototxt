@@ -12,10 +12,6 @@ weight_decay: 0.0005
 snapshot: 10000
 snapshot_prefix: "snapshots/grl_syn"
 solver_mode: GPU
-# At first, we will train classifier normally. grl_train defines iterations times. We will first fix feature extractor and train a good regressor and classifier, say, pose estimator. Then based on them, we begin to adjust feature.
-# fc_interval is feature iteration times
-# grl_interval is regressor iteration times 
-# Below parameters mean that we will train 1 time feature extractor, then we will train 100 times regressor. We will fix one when we train another. We train it in a circular way.
 grl_interval: 100
 fc_interval: 1
 grl_train: 10000

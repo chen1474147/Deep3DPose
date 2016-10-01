@@ -1,8 +1,6 @@
 name: "grl"
 
-# -----------------------------------------------------------------------------
-# ----------------------------------------------------------------- Data layer
-# -----------------------------------------------------------------------------
+
 
 # ---------------------------------------------------------------------- Source
 # Train phase
@@ -47,6 +45,7 @@ layer {
   include: { phase: TRAIN }
 }
 # [0.5 0.5]
+# confusing label
 layer {
   name: "source_nogrl_labels"
   type: "Data"
@@ -101,6 +100,8 @@ layer {
   }
   include: { phase: TRAIN }
 }
+
+# ---------------------------------------------------------------------- Test
 # Test phase
 layer {
   name: "valid_data"
@@ -719,7 +720,7 @@ layer {
   }
   loss_weight: 0.5
 }
-# is_grl_loss 2 means that it is confuse classifier loss
+# is_grl_loss 2 means that it is confusing classifier loss
 layer {
   name: "nogrl_loss"
   type: "MultinomialLogisticLoss"
