@@ -68,5 +68,9 @@ for i = 1:objnum
     fclose(fid);
 end
 
+%%
+
+genDistr;
+genobjlist;
 
 
