@@ -63,7 +63,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="parse_mex.cpp" />
-    <ClCompile Include="parse_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="parse.h" />

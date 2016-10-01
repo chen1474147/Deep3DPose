@@ -18,9 +18,6 @@
     <ClCompile Include="parse_mex.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="parse_test.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="parse.h">
