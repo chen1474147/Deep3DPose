@@ -10,7 +10,7 @@ Define grl_train, grl_interval and fc_interval in solver.prototxt.
 
 At first, we will train the network normally to get a good initial point of regressor and classifier. grl_train defines this normal iteration times. We will fix feature extractor and train a good classifier and regressor, say, a pose estimator. Then based on them, we begin to adjust feature extracotr. fc_interval is feature extractor iteration times grl_interval is classifier iteration times
 
-Below parameters mean that we will first train 10000 times to get a good initial classifier and regressor. Then we begin to adjst feature extractor. We will adjust 1 time feature extractor, then we train 100 times classifier. We will fix one when we train another. We train it in a circular way. But the regressor is always in back propagation.
+Below parameters mean that we will first train 10000 times to get a good initial classifier and regressor. Then we begin to adjust feature extractor. We will adjust 1 time feature extractor, then we train 100 times classifier. We will fix one when we train another. We train it in a circular way. But the regressor is always in back propagation.
 
 ```
 net: "train_val.prototxt"
@@ -40,7 +40,7 @@ is_grl_layer 2 means that it is feature layer
 is_grl_layer 1 means that it is clasifier layer
 is_grl_layer 0 means that it is regressor layer
 
-ALso, you should define loss together.
+ALso, you should define loss property together.
 is_grl_loss 0 means that it is regressor loss
 is_grl_loss 1 means that it is right classifier loss, say, the mage classifier label is [0 1] and its ground truth is [0 1]
 is_grl_loss 1 means that it is confusing classifier loss, say, the image classifier label is [0 1] and its ground truth is [0.5 0.5]
