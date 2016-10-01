@@ -6,7 +6,7 @@ name: "grl"
 
 # ---------------------------------------------------------------------- Source
 # Train phase
-# images
+# synthetic images
 layer {
   name: "source_data"
   type: "Data"
@@ -573,7 +573,8 @@ layer {
   top: "predict"
 }
 
-# is_grl_loss 0 means that it is regressor layer
+# is_grl_loss 0 means that it is regressor loss.
+# it will back propagation anyway.
 layer {
   name: "lp_loss"
   type: "EuclideanLoss"
