@@ -50,7 +50,8 @@ for skel_id = 1:100:sknum
     points = Body(RR, shapepara).points;
     
     % rot to original pose
-    p = R'*points';
+    % p = R'*points';
+    p = points';
     p = 0.5*p;
     
     points = p';
