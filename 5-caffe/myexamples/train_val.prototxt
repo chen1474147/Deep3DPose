@@ -1,0 +1,732 @@
+name: "grl"
+
+# -----------------------------------------------------------------------------
+# ----------------------------------------------------------------- Data layer
+# -----------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------- Source
+# Train phase
+# images
+layer {
+  name: "source_data"
+  type: "Data"
+  top: "source_data"
+  data_param {
+    source: "../../data_syn/image_train.lmdb"
+    backend: LMDB
+    batch_size: 256
+  }
+  transform_param {
+    mean_file: "../../data_syn/image_mean.binaryproto"
+  }
+  include: { phase: TRAIN }
+}
+# pose, or other labels
+layer {
+  name: "source_label"
+  type: "Data"
+  top: "lp_labels"
+  data_param {
+    source: "../../data_syn/joint3_train.lmdb"
+    backend: LMDB
+    batch_size: 256
+  }
+  include: { phase: TRAIN }
+}
+# [0, 1]
+# it means that it is synthetic data
+layer {
+  name: "source_grl_labels"
+  type: "Data"
+  top: "source_grl_labels"
+  data_param {
+    source: "../../data_syn/label1_train.lmdb"
+    backend: LMDB
+    batch_size: 256
+  }
+  include: { phase: TRAIN }
+}
+# [0.5 0.5]
+layer {
+  name: "source_nogrl_labels"
+  type: "Data"
+  top: "source_nogrl_labels"
+  data_param {
+    source: "../../data_syn/label2_train.lmdb"
+    backend: LMDB
+    batch_size: 256
+  }
+  include: { phase: TRAIN }
+}
+
+# ---------------------------------------------------------------------- Target
+# Train phase
+# real images
+layer {
+  name: "target_data"
+  type: "Data"
+  top: "target_data"
+  data_param {
+    source: "../../data_ada/image_train.lmdb"
+    backend: LMDB
+    batch_size: 256
+  }
+  transform_param {
+    mean_file: "../../data_syn/image_mean.binaryproto"
+  }
+  include: { phase: TRAIN }
+}
+# [1 0]
+# means it is real
+layer {
+  name: "target_grl_labels"
+  type: "Data"
+  top: "target_grl_labels"
+  data_param {
+    source: "../../data_ada/label1_train.lmdb"
+    backend: LMDB
+    batch_size: 256
+  }
+  include: { phase: TRAIN }
+}
+# [0.5 0.5]
+layer {
+  name: "target_nogrl_labels"
+  type: "Data"
+  top: "target_nogrl_labels"
+  data_param {
+    source: "../../data_ada/label2_train.lmdb"
+    backend: LMDB
+    batch_size: 256
+  }
+  include: { phase: TRAIN }
+}
+# Test phase
+layer {
+  name: "valid_data"
+  type: "Data"
+  top: "data"
+  data_param {
+    source: "../../data_val/image_train.lmdb"
+    backend: LMDB
+    batch_size: 1
+  }
+  transform_param {
+    mean_file: "../../data_syn/image_mean.binaryproto"
+  }
+  include: { phase: TEST }
+}
+layer {
+  name: "valid_label"
+  type: "Data"
+  top: "lp_labels"
+  data_param {
+    source: "../../data_val/joint3_train.lmdb"
+    backend: LMDB
+    batch_size: 1
+  }
+  include: { phase: TEST }
+}
+layer {
+  name: "valid_grl_labels"
+  type: "Data"
+  top: "grl_labels"
+  data_param {
+    source: "../../data_val/label1_train.lmdb"
+    backend: LMDB
+    batch_size: 1
+  }
+  include: { phase: TEST }
+}
+layer {
+  name: "valid_nogrl_labels"
+  type: "Data"
+  top: "nogrl_labels"
+  data_param {
+    source: "../../data_val/label2_train.lmdb"
+    backend: LMDB
+    batch_size: 1
+  }
+  include: { phase: TEST }
+}
+
+# ---------------------------------------------------------- Data concatenation
+layer {
+  name: "concat_data"
+  type: "Concat"
+  bottom: "source_data"
+  bottom: "target_data"
+  top: "data"
+  concat_param {
+    concat_dim: 0
+  }
+  include: { phase: TRAIN }
+}
+layer {
+  name: "concat_grl_labels"
+  type: "Concat"
+  bottom: "source_grl_labels"
+  bottom: "target_grl_labels"
+  top: "grl_labels"
+  concat_param {
+    concat_dim: 0
+  }
+  include: { phase: TRAIN }
+}
+layer {
+  name: "concat_nogrl_labels"
+  type: "Concat"
+  bottom: "source_nogrl_labels"
+  bottom: "target_nogrl_labels"
+  top: "nogrl_labels"
+  concat_param {
+    concat_dim: 0
+  }
+  include: { phase: TRAIN }
+}
+
+# ----------------------------------------------------------------------------
+# is_grl_layer 2 means that it is feature layer
+layer {
+  name: "conv1"
+  type: "Convolution"
+  bottom: "data"
+  top: "conv1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    is_grl_layer: 2
+    num_output: 96
+    kernel_size: 11
+    stride: 4
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu1"
+  type: "ReLU"
+  bottom: "conv1"
+  top: "conv1"
+}
+layer {
+  name: "norm1"
+  type: "LRN"
+  bottom: "conv1"
+  top: "norm1"
+  lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+  }
+}
+layer {
+  name: "pool1"
+  type: "Pooling"
+  bottom: "norm1"
+  top: "pool1"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+# ----------------------------------------------------------------------------
+layer {
+  name: "conv2"
+  type: "Convolution"
+  bottom: "pool1"
+  top: "conv2"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    is_grl_layer: 2
+    num_output: 256
+    pad: 2
+    kernel_size: 5
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+  }
+}
+layer {
+  name: "relu2"
+  type: "ReLU"
+  bottom: "conv2"
+  top: "conv2"
+}
+layer {
+  name: "norm2"
+  type: "LRN"
+  bottom: "conv2"
+  top: "norm2"
+  lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+  }
+}
+layer {
+  name: "pool2"
+  type: "Pooling"
+  bottom: "norm2"
+  top: "pool2"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+# ----------------------------------------------------------------------------
+layer {
+  name: "conv3"
+  type: "Convolution"
+  bottom: "pool2"
+  top: "conv3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    is_grl_layer: 2
+    num_output: 384
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu3"
+  type: "ReLU"
+  bottom: "conv3"
+  top: "conv3"
+}
+# ----------------------------------------------------------------------------
+layer {
+  name: "conv4"
+  type: "Convolution"
+  bottom: "conv3"
+  top: "conv4"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    is_grl_layer: 2
+    num_output: 384
+    pad: 1
+    kernel_size: 3
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+  }
+}
+layer {
+  name: "relu4"
+  type: "ReLU"
+  bottom: "conv4"
+  top: "conv4"
+}
+# ----------------------------------------------------------------------------
+layer {
+  name: "conv5"
+  type: "Convolution"
+  bottom: "conv4"
+  top: "conv5"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    is_grl_layer: 2
+    num_output: 256
+    pad: 1
+    kernel_size: 3
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+  }
+}
+layer {
+  name: "relu5"
+  type: "ReLU"
+  bottom: "conv5"
+  top: "conv5"
+}
+layer {
+  name: "pool5"
+  type: "Pooling"
+  bottom: "conv5"
+  top: "pool5"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+
+# ------------------------------------------------------ Exclude target samples
+layer {
+  name: "slice_features"
+  type: "Slice"
+  bottom: "pool5"
+  top: "source_features"
+  top: "target_features"
+  slice_param {
+    slice_dim: 0
+  }
+  include: { phase: TRAIN }
+}
+layer {
+  name: "kill_target_features"
+  type: "Silence"
+  bottom: "target_features"
+  include: { phase: TRAIN }
+}
+layer {
+  name: "pool5_alias"
+  type: "Split"
+  bottom: "pool5"
+  top: "source_features"
+  include: { phase: TEST }
+}
+
+# ----------------------------------------------------------------------------
+# is_grl_layer 0 means that it is regressor layer
+# it will back propagation anyway.
+layer {
+  name: "fc6"
+  type: "InnerProduct"
+  bottom: "source_features"
+  top: "fc6"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    is_grl_layer: 0
+    num_output: 4096
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+  }
+}
+layer {
+  name: "relu6"
+  type: "ReLU"
+  bottom: "fc6"
+  top: "fc6"
+}
+layer {
+  name: "drop6"
+  type: "Dropout"
+  bottom: "fc6"
+  top: "fc6"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+# ----------------------------------------------------------------------------
+layer {
+  name: "fc7"
+  type: "InnerProduct"
+  bottom: "fc6"
+  top: "fc7"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    is_grl_layer: 0
+    num_output: 4096
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+  }
+}
+layer {
+  name: "relu7"
+  type: "ReLU"
+  bottom: "fc7"
+  top: "fc7"
+}
+layer {
+  name: "drop7"
+  type: "Dropout"
+  bottom: "fc7"
+  top: "fc7"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+
+# ----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# ------------------------------------------------------------- Label predictor
+# -----------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------
+layer {
+  name: "lp_fc8"
+  type: "InnerProduct"
+  bottom: "fc7"
+  top: "lp_fc8"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    is_grl_layer: 0
+    num_output: 45
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "sigmoid8"
+  type: "Sigmoid"
+  bottom: "lp_fc8"
+  top: "predict"
+}
+
+# is_grl_loss 0 means that it is regressor layer
+layer {
+  name: "lp_loss"
+  type: "EuclideanLoss"
+  bottom: "predict"
+  bottom: "lp_labels"
+  top: "lp_loss"
+  loss_param {
+    is_grl_loss: 0
+  }
+  loss_weight: 20
+}
+
+# -----------------------------------------------------------------------------
+# ----------------------------------------------------------- Domain classifier
+# -----------------------------------------------------------------------------
+# is_grl_layer 1 means that it is classifier layer
+layer {
+  name: "dc_ip1"
+  type: "InnerProduct"
+  bottom: "pool5"
+  top: "dc_ip1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    is_grl_layer: 1
+    num_output: 1024
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+  }
+}
+layer {
+  name: "dc_relu1"
+  type: "ReLU"
+  bottom: "dc_ip1"
+  top: "dc_ip1"
+}
+layer {
+  name: "dc_drop1"
+  type: "Dropout"
+  bottom: "dc_ip1"
+  top: "dc_ip1"
+  dropout_param {
+    dropout_ratio: 0.7
+  }
+}
+# ----------------------------------------------------------------------------
+layer {
+  name: "dc_ip2"
+  type: "InnerProduct"
+  bottom: "dc_ip1"
+  top: "dc_ip2"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    is_grl_layer: 1
+    num_output: 256
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+  }
+}
+layer {
+  name: "dc_relu2"
+  type: "ReLU"
+  bottom: "dc_ip2"
+  top: "dc_ip2"
+}
+layer {
+  name: "dc_drop2"
+  type: "Dropout"
+  bottom: "dc_ip2"
+  top: "dc_ip2"
+  dropout_param {
+    dropout_ratio: 0.7
+  }
+}
+layer {
+  type: "InnerProduct"
+  name: "dc_ip3"
+  bottom: "dc_ip2"
+  top: "dc_ip3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    is_grl_layer: 1
+    num_output: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+
+layer {
+  name: "softmax3"
+  type: "Softmax"
+  bottom: "dc_ip3"
+  top: "predict2"
+}
+# is_grl_loss 1 means that it is right classifier loss
+layer {
+  name: "grl_loss"
+  type: "MultinomialLogisticLoss"
+  bottom: "predict2"
+  bottom: "grl_labels"
+  top: "grl_loss"
+  loss_param {
+    is_grl_loss: 1
+  }
+  loss_weight: 0.5
+}
+# is_grl_loss 2 means that it is confuse classifier loss
+layer {
+  name: "nogrl_loss"
+  type: "MultinomialLogisticLoss"
+  bottom: "predict2"
+  bottom: "nogrl_labels"
+  top: "nogrl_loss"
+  loss_param {
+    is_grl_loss: 2
+  }
+  loss_weight: 0.5
+}
